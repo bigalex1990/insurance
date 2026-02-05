@@ -2,12 +2,12 @@ name: Build Windows EXE
 
 on:
   push:
-    branches: [ "main" ] # 当你向 main 分支提交代码时触发
-  workflow_dispatch:      # 允许你在 GitHub 页面上手动点击运行
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: windows-latest # 核心：在 Windows 环境下运行
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
@@ -19,19 +19,19 @@ jobs:
         python-version: '3.10'
 
     - name: Install dependencies
+      shell: bash
       run: |
         python -m pip install --upgrade pip
-        pip install pandas openpyxl pyinstaller
+        pip install -r requirements.txt
 
     - name: Build EXE with PyInstaller
+      shell: bash
       run: |
-        # antigravity 核心通常是 python 脚本，这里假设你的主程序叫 main.py
-        # --onefile 表示打包成单个 exe
-        # --noconsole 表示运行时不显示黑色的命令行窗口
-        pyinstaller --onefile --noconsole main.py
+        # 使用 --console 模式，因为您的代码中有 print 和 input 交互
+        pyinstaller --onefile --console main.py
 
-    - name: Upload EXE artifact
+    - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ClaimAuditTool-Windows
-        path: dist/main.exe # 打包生成的 exe 路径
+        name: ClaimAuditTool_v1
+        path: dist/main.exe
